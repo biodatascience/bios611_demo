@@ -3,8 +3,13 @@ library(reshape2)
 library(modelr)
 library(maps)
 
+args = commandArgs(trailingOnly=TRUE)
+DATA_DIR = args[1]
+RESULTS_DIR = args[2]
+data_path = file.path(DATA_DIR, 'combined_wbdata.csv')
+
 # Read in the combined data set
-wb_df = read_delim('data/combined_wbdata.csv', delim = '\t')
+wb_df = read_delim(data_path, delim = '\t')
 
 # Plot all variables against year
 wb_df %>%
@@ -17,7 +22,7 @@ wb_df %>%
   theme_minimal() +
   theme(legend.position = "null")
 
-ggsave('results/global_trends.png', height=5, width=6)
+ggsave(file.path(RESULTS_DIR, 'global_trends.png'), height=5, width=6)
 
 
 # Plot GDP start and end, normalized to start (so that end result is a fold-change)
@@ -75,7 +80,7 @@ for (i in 1:nrow(slower_nations)){
                    color='red')
 }
 
-ggsave('results/fold_changes_gdp.png', plot=p, height=5, width=7)
+ggsave(file.path(RESULTS_DIR, 'fold_changes_gdp.png'), plot=p, height=5, width=7)
 
 
 # How GDP relates to percent population over 65 in the year 2016   
@@ -101,7 +106,7 @@ ggplot(gdp_by_p65, aes(x=GDP.Current.US.Dollars, y=Percent.Pop.Over.65)) +
 gdp_by_p65 = gdp_by_p65 %>% 
   add_residuals(mod_gdp_p65, "lresid")
 
-ggsave('results/p65_by_gdp.png', height=5, width=5)
+ggsave(file.path(RESULTS_DIR, 'p65_by_gdp.png'), height=5, width=5)
 
 
 # How birth rate relates to percent population over 65 in the year 2016   
@@ -128,7 +133,7 @@ br_by_p65 = br_by_p65 %>%
   add_residuals(mod_br_p65, "lresid") %>%
   mutate(resid = 2^lresid)
 
-ggsave('results/p65_by_br.png', height=5, width=5)
+ggsave(file.path(RESULTS_DIR, 'p65_by_br.png'), height=5, width=5)
 
 
 # Which countries have far more or far fewer seniors than expected based on birth rate?
@@ -171,7 +176,7 @@ for (i in 1:nrow(more_seniors_br)){
                      color='red')
 }
 print(p2)
-ggsave('results/p65_residuals_by_br.png', plot=p2, height = 6, width = 5)
+ggsave(file.path(RESULTS_DIR, 'p65_residuals_by_br.png'), plot=p2, height = 6, width = 5)
 
 
 # Plot birth rates over time in nations with unusual percentages over 65
@@ -188,7 +193,7 @@ p4 = wb_df %>% filter(Country.Name %in% unusual_num_seniors_br$Country.Name) %>%
   annotate('text', x=1982, y=10, label='More Seniors than Expected', color='DarkRed', size=5) 
   #ggtitle('Fewer seniors than expected means recent birth rate decrease')
 
-ggsave('results/br_over_time.png', plot=p4, height=5, width=7)
+ggsave(file.path(RESULTS_DIR, 'br_over_time.png'), plot=p4, height=5, width=7)
 
 
 # Map of countries
@@ -215,4 +220,4 @@ ggplot(world_map, aes(long, lat, group=group)) +
   theme_minimal() +
   ggtitle('Notable Nations')
 
-ggsave('results/world_map.png', height=7, width=10)
+ggsave(file.path(RESULTS_DIR, 'world_map.png'), height=7, width=10)

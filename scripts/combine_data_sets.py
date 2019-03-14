@@ -8,7 +8,6 @@ DATA_DIR = sys.argv[1]
 
 # Initialize dictionary to store data
 data_dict = {'birthrate':0, 
-			 # 'metadata':0, 
 			 'gdp':0, 
 			 'pop_over_65':0}
 			 
@@ -33,13 +32,6 @@ pop_over_65_f = os.path.join(DATA_DIR,
 							   'API_SP.POP.65UP.TO.ZS_DS2_en_csv_v2_10403170.csv')
 if os.path.isfile(pop_over_65_f):
 	data_dict['pop_over_65'] = pd.read_csv(pop_over_65_f, sep=',', skiprows=4)		
-
-# Metadata grouping countries into regions--commented out 2/5/2019 because not needed early on
-# metadata_f = os.path.join(DATA_DIR, 
-							   # 'API_SP.DYN.CBRT.IN_DS2_en_csv_v2_10402674', 
-							   # 'Metadata_Country_API_SP.DYN.CBRT.IN_DS2_en_csv_v2_10402674.csv')
-# if os.path.isfile(metadata_f):
-	# data_dict['metadata'] = pd.read_csv(metadata_f, sep=',')
 
 # Replace data codes with readable labels
 label_dict = {'SP.POP.65UP.TO.ZS':'Percent.Pop.Over.65',
@@ -66,8 +58,8 @@ combo_df['Indicator Code'] = combo_df['Indicator Code'].apply(lambda x: label_di
 combo_df.columns = ['Country.Name', 'Country.Code', 'Indicator.Name', 'Indicator.Code', 'Year', 'Value']
 
 # Check DF shape, to be sure everything worked ok
-print(combo_df.shape)
-print(combo_df.tail())
+# print(combo_df.shape)
+# print(combo_df.tail())
 
 # Write combined dataframe to file
 combo_df.to_csv(os.path.join(DATA_DIR, 'combined_wbdata.csv'), sep='\t', index=False)
